@@ -3,16 +3,20 @@ import re
 import datetime
 import requests
 
-# Check command line argment usage
-if len(sys.argv) > 3 or len(sys.argv) < 2:
+def print_usage():
     print("Usage: python main.py startDate(YYYY-MM-DD) [endDate(YY-MM-DD)]\n If no end date is supplied, the current date will be used.")
     exit()
 
-url_pattern = "http://content.caiso.com/green/renewrpt/{date}_DailyRenewablesWatch.txt"
+# Check command line argument usage
+if len(sys.argv) > 3 or len(sys.argv) < 2:
+    print_usage()
 
 # Parse start/end dates from command line args
-start_date = datetime.datetime.strptime(sys.argv[1], "%Y-%m-%d").date()
-end_date = datetime.datetime.strptime(sys.argv[2], "%Y-%m-%d").date() if len(sys.argv) == 3 else datetime.date.today()
+try:
+    start_date = datetime.datetime.strptime(sys.argv[1], "%Y-%m-%d").date()
+    end_date = datetime.datetime.strptime(sys.argv[2], "%Y-%m-%d").date() if len(sys.argv) == 3 else datetime.date.today()
+except:
+    print_usage()
 
 print("Start date: " + str(start_date))
 print("End date: " + str(end_date))
@@ -23,6 +27,8 @@ total_production_csv = "Date, Hour, RENEWABLES, NUCLEAR, THERMAL, IMPORTS, HYDRO
 # Open files for writing
 renewable_resources_file = open("caiso_renewable_resources.csv", "w")
 total_production_file = open("caiso_total_production.csv", "w")
+
+url_pattern = "http://content.caiso.com/green/renewrpt/{date}_DailyRenewablesWatch.txt"
 
 # Iterate through the dates
 d = start_date
